@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
 
             if ((i >= 0 && i <= n) && (j >= 0 && j <= n)) {
                 val win = game.play(i, j)
-                if (win) {
+                if (win == WinCondition.WIN || win == WinCondition.TIE) {
                     break
                 }
             } else {

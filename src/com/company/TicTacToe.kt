@@ -1,12 +1,19 @@
 package com.company
 
-class TicTacToe(n: Int) {
-    var board = Array(n, { arrayOfNulls<String>(n) })
+enum class WinCondition {
+    WIN, CONTINUING, TIE
+}
+
+class TicTacToe(dimenstion: Int) {
+    var dimension: Int
+    var board = Array(dimenstion, { arrayOfNulls<String>(dimenstion) })
     var currentStep = 0
     val defaultValue = "_"
     var currentPlayer = "o"
 
     init {
+        this.dimension = dimenstion
+
         for (i in board.indices) {
             var row = board[i]
             for (j in row.indices) {
@@ -16,30 +23,79 @@ class TicTacToe(n: Int) {
         }
     }
 
-    fun play(i: Int, j: Int) : Boolean {
+    fun play(i: Int, j: Int) : WinCondition {
         val cell = board[i][j]
         if (cell.equals(defaultValue)) {
             board[i][j] = currentPlayer
-            var win = checkWin(i, j)
             currentStep++
+            var winCondition = checkWin(i, j)
             calcCurrentPlayer()
             printBoard()
-            return win
+            return winCondition
         } else {
             println("This position is taken!")
-            return false
+            return WinCondition.CONTINUING
         }
     }
 
-    fun checkWin(i: Int, j: Int) : Boolean {
+    fun checkWin(i: Int, j: Int) : WinCondition {
+        println("current step is: $currentStep")
+        if (currentStep < (dimension * dimension)) {
+            if (checkRow(i) || checkColumn(j) || checkMainDiagonal() || checkReverseDiagonal()) {
+                println("$currentPlayer player has won!")
+                return WinCondition.WIN
+            } else {
+                return WinCondition.CONTINUING
+            }
+        } else {
+            println("tie! everyone are losers!")
+            return WinCondition.TIE
+        }
+    }
 
+    fun checkRow(i: Int) : Boolean {
+        var equals = true
+        for (k in board.indices) {
+            equals = equals && board[i][k].equals(currentPlayer)
+        }
 
-        return false
+        return equals
+    }
+
+    fun checkColumn(j: Int) : Boolean {
+        var equals = true
+        for (k in board.indices) {
+            equals = equals && board[k][j].equals(currentPlayer)
+        }
+
+        return equals
+    }
+
+    fun checkMainDiagonal() : Boolean {
+        var equals = true
+        for (k in board.indices) {
+            for (l in board.indices) {
+                if (k == l) {
+                    equals = equals && board[k][l].equals(currentPlayer)
+                }
+            }
+        }
+
+        return equals
+    }
+
+    fun checkReverseDiagonal() : Boolean {
+        var equals = true
+        for (k in board.indices) {
+            equals = equals && board[k][dimension - k - 1].equals(currentPlayer)
+        }
+
+        return equals
     }
 
     fun calcCurrentPlayer() {
         if (currentStep % 2 == 0) {
-            currentPlayer = "0"
+            currentPlayer = "o"
         } else {
             currentPlayer = "x"
         }
